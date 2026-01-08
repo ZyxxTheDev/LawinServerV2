@@ -36,12 +36,12 @@ app.get("/", (req, res) => {
 
 app.get("/clients", (req, res) => {
     res.type("application/json");
-    
+
     let data = JSON.stringify({
         "amount": global.Clients.length,
         "clients": global.Clients.map(i => i.displayName)
     }, null, 2);
-    
+
     res.send(data);
 });
 
@@ -77,31 +77,31 @@ wss.on('connection', async (ws) => {
                 if (!ID) ID = functions.MakeID();
 
                 ws.send(XMLBuilder.create("open")
-                .attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-framing")
-                .attribute("from", global.xmppDomain)
-                .attribute("id", ID)
-                .attribute("version", "1.0")
-                .attribute("xml:lang", "en").toString());
-                
+                    .attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-framing")
+                    .attribute("from", global.xmppDomain)
+                    .attribute("id", ID)
+                    .attribute("version", "1.0")
+                    .attribute("xml:lang", "en").toString());
+
                 if (Authenticated) {
                     ws.send(XMLBuilder.create("stream:features").attribute("xmlns:stream", "http://etherx.jabber.org/streams")
-                    .element("ver").attribute("xmlns", "urn:xmpp:features:rosterver").up()
-                    .element("starttls").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-tls").up()
-                    .element("bind").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-bind").up()
-                    .element("compression").attribute("xmlns", "http://jabber.org/features/compress")
-                    .element("method", "zlib").up().up()
-                    .element("session").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-session").up().toString());
+                        .element("ver").attribute("xmlns", "urn:xmpp:features:rosterver").up()
+                        .element("starttls").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-tls").up()
+                        .element("bind").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-bind").up()
+                        .element("compression").attribute("xmlns", "http://jabber.org/features/compress")
+                        .element("method", "zlib").up().up()
+                        .element("session").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-session").up().toString());
                 } else {
                     ws.send(XMLBuilder.create("stream:features").attribute("xmlns:stream", "http://etherx.jabber.org/streams")
-                    .element("mechanisms").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
-                    .element("mechanism", "PLAIN").up().up()
-                    .element("ver").attribute("xmlns", "urn:xmpp:features:rosterver").up()
-                    .element("starttls").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-tls").up()
-                    .element("compression").attribute("xmlns", "http://jabber.org/features/compress")
-                    .element("method", "zlib").up().up()
-                    .element("auth").attribute("xmlns", "http://jabber.org/features/iq-auth").up().toString());
+                        .element("mechanisms").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl")
+                        .element("mechanism", "PLAIN").up().up()
+                        .element("ver").attribute("xmlns", "urn:xmpp:features:rosterver").up()
+                        .element("starttls").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-tls").up()
+                        .element("compression").attribute("xmlns", "http://jabber.org/features/compress")
+                        .element("method", "zlib").up().up()
+                        .element("auth").attribute("xmlns", "http://jabber.org/features/iq-auth").up().toString());
                 }
-            break;
+                break;
 
             case "auth":
                 if (!ID) return;
@@ -129,11 +129,11 @@ wss.on('connection', async (ws) => {
 
                     ws.send(XMLBuilder.create("success").attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-sasl").toString());
                 } else return Error(ws);
-            break;
+                break;
 
             case "iq":
                 if (!ID) return;
-                
+
                 switch (msg.root.attributes.id) {
                     case "_xmpp_bind1":
                         if (resource || !accountId) return;
@@ -150,39 +150,39 @@ wss.on('connection', async (ws) => {
                         jid = `${accountId}@${global.xmppDomain}/${resource}`;
 
                         ws.send(XMLBuilder.create("iq")
-                        .attribute("to", jid)
-                        .attribute("id", "_xmpp_bind1")
-                        .attribute("xmlns", "jabber:client")
-                        .attribute("type", "result")
-                        .element("bind")
-                        .attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
-                        .element("jid", jid).up().up().toString());
-                    break;
+                            .attribute("to", jid)
+                            .attribute("id", "_xmpp_bind1")
+                            .attribute("xmlns", "jabber:client")
+                            .attribute("type", "result")
+                            .element("bind")
+                            .attribute("xmlns", "urn:ietf:params:xml:ns:xmpp-bind")
+                            .element("jid", jid).up().up().toString());
+                        break;
 
                     case "_xmpp_session1":
                         if (!clientExists) return Error(ws);
 
                         ws.send(XMLBuilder.create("iq")
-                        .attribute("to", jid)
-                        .attribute("from", global.xmppDomain)
-                        .attribute("id", "_xmpp_session1")
-                        .attribute("xmlns", "jabber:client")
-                        .attribute("type", "result").toString());
+                            .attribute("to", jid)
+                            .attribute("from", global.xmppDomain)
+                            .attribute("id", "_xmpp_session1")
+                            .attribute("xmlns", "jabber:client")
+                            .attribute("type", "result").toString());
 
                         await getPresenceFromFriends(ws, accountId, jid);
-                    break;
+                        break;
 
                     default:
                         if (!clientExists) return Error(ws);
 
                         ws.send(XMLBuilder.create("iq")
-                        .attribute("to", jid)
-                        .attribute("from", global.xmppDomain)
-                        .attribute("id", msg.root.attributes.id)
-                        .attribute("xmlns", "jabber:client")
-                        .attribute("type", "result").toString());
+                            .attribute("to", jid)
+                            .attribute("from", global.xmppDomain)
+                            .attribute("id", msg.root.attributes.id)
+                            .attribute("xmlns", "jabber:client")
+                            .attribute("type", "result").toString());
                 }
-            break;
+                break;
 
             case "message":
                 if (!clientExists) return Error(ws);
@@ -204,12 +204,12 @@ wss.on('connection', async (ws) => {
                         if (receiver.accountId == accountId) return;
 
                         receiver.client.send(XMLBuilder.create("message")
-                        .attribute("to", receiver.jid)
-                        .attribute("from", jid)
-                        .attribute("xmlns", "jabber:client")
-                        .attribute("type", "chat")
-                        .element("body", body).up().toString());
-                    return;
+                            .attribute("to", receiver.jid)
+                            .attribute("from", jid)
+                            .attribute("xmlns", "jabber:client")
+                            .attribute("type", "chat")
+                            .element("body", body).up().toString());
+                        return;
 
                     case "groupchat":
                         if (!msg.root.attributes.to) return;
@@ -227,13 +227,13 @@ wss.on('connection', async (ws) => {
                             if (!ClientData) return;
 
                             ClientData.client.send(XMLBuilder.create("message")
-                            .attribute("to", ClientData.jid)
-                            .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
-                            .attribute("xmlns", "jabber:client")
-                            .attribute("type", "groupchat")
-                            .element("body", body).up().toString());
+                                .attribute("to", ClientData.jid)
+                                .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
+                                .attribute("xmlns", "jabber:client")
+                                .attribute("type", "groupchat")
+                                .element("body", body).up().toString());
                         });
-                    return;
+                        return;
                 }
 
                 if (isJSON(body)) {
@@ -246,7 +246,7 @@ wss.on('connection', async (ws) => {
 
                     sendXmppMessageToClient(jid, msg, body);
                 }
-            break;
+                break;
 
             case "presence":
                 if (!clientExists) return Error(ws);
@@ -257,11 +257,11 @@ wss.on('connection', async (ws) => {
 
                         if (msg.root.attributes.to.endsWith(`@muc.${global.xmppDomain}`) || msg.root.attributes.to.split("/")[0].endsWith(`@muc.${global.xmppDomain}`)) {
                             if (!msg.root.attributes.to.toLowerCase().startsWith("party-")) return;
-                            
+
                             let roomName = msg.root.attributes.to.split("@")[0];
-                            
+
                             if (!global.MUCs[roomName]) return;
-                            
+
                             let memberIndex = global.MUCs[roomName].members.findIndex(i => i.accountId == accountId);
                             if (memberIndex != -1) {
                                 global.MUCs[roomName].members.splice(memberIndex, 1);
@@ -269,83 +269,83 @@ wss.on('connection', async (ws) => {
                             }
 
                             ws.send(XMLBuilder.create("presence")
-                            .attribute("to", jid)
-                            .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
-                            .attribute("xmlns", "jabber:client")
-                            .attribute("type", "unavailable")
-                            .element("x").attribute("xmlns", "http://jabber.org/protocol/muc#user")
-                            .element("item")
-                            .attribute("nick", getMUCmember(roomName, displayName, accountId, resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
-                            .attribute("jid", jid)
-                            .attribute("role", "none").up()
-                            .element("status").attribute("code", "110").up()
-                            .element("status").attribute("code", "100").up()
-                            .element("status").attribute("code", "170").up().up().toString());
+                                .attribute("to", jid)
+                                .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
+                                .attribute("xmlns", "jabber:client")
+                                .attribute("type", "unavailable")
+                                .element("x").attribute("xmlns", "http://jabber.org/protocol/muc#user")
+                                .element("item")
+                                .attribute("nick", getMUCmember(roomName, displayName, accountId, resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
+                                .attribute("jid", jid)
+                                .attribute("role", "none").up()
+                                .element("status").attribute("code", "110").up()
+                                .element("status").attribute("code", "100").up()
+                                .element("status").attribute("code", "170").up().up().toString());
                             return;
                         }
-                    break;
+                        break;
 
                     default:
                         if (msg.root.children.find(i => i.name == "muc:x") || msg.root.children.find(i => i.name == "x")) {
                             if (!msg.root.attributes.to) return;
-                            
+
                             let roomName = msg.root.attributes.to.split("@")[0];
-    
+
                             if (!global.MUCs[roomName]) global.MUCs[roomName] = { members: [] };
-    
+
                             if (global.MUCs[roomName].members.find(i => i.accountId == accountId)) return;
-    
+
                             global.MUCs[roomName].members.push({ accountId: accountId });
-    
+
                             joinedMUCs.push(roomName);
-    
+
                             ws.send(XMLBuilder.create("presence")
-                            .attribute("to", jid)
-                            .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
-                            .attribute("xmlns", "jabber:client")
-                            .element("x").attribute("xmlns", "http://jabber.org/protocol/muc#user")
-                            .element("item")
-                            .attribute("nick", getMUCmember(roomName, displayName, accountId, resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
-                            .attribute("jid", jid)
-                            .attribute("role", "participant")
-                            .attribute("affiliation", "none").up()
-                            .element("status").attribute("code", "110").up()
-                            .element("status").attribute("code", "100").up()
-                            .element("status").attribute("code", "170").up()
-                            .element("status").attribute("code", "201").up().up().toString());
-    
-                            global.MUCs[roomName].members.forEach(member => {
-                                let ClientData = global.Clients.find(i => i.accountId == member.accountId);
-                                if (!ClientData) return;
-    
-                                ws.send(XMLBuilder.create("presence")
-                                .attribute("from", getMUCmember(roomName, ClientData.displayName, ClientData.accountId, ClientData.resource))
                                 .attribute("to", jid)
-                                .attribute("xmlns", "jabber:client")
-                                .element("x")
-                                .attribute("xmlns", "http://jabber.org/protocol/muc#user")
-                                .element("item")
-                                .attribute("nick", getMUCmember(roomName, ClientData.displayName, ClientData.accountId, ClientData.resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
-                                .attribute("jid", ClientData.jid)
-                                .attribute("role", "participant")
-                                .attribute("affiliation", "none").up().up().toString());
-    
-                                if (accountId == ClientData.accountId) return;
-    
-                                ClientData.client.send(XMLBuilder.create("presence")
                                 .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
-                                .attribute("to", ClientData.jid)
                                 .attribute("xmlns", "jabber:client")
-                                .element("x")
-                                .attribute("xmlns", "http://jabber.org/protocol/muc#user")
+                                .element("x").attribute("xmlns", "http://jabber.org/protocol/muc#user")
                                 .element("item")
                                 .attribute("nick", getMUCmember(roomName, displayName, accountId, resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
                                 .attribute("jid", jid)
                                 .attribute("role", "participant")
-                                .attribute("affiliation", "none").up().up().toString());
+                                .attribute("affiliation", "none").up()
+                                .element("status").attribute("code", "110").up()
+                                .element("status").attribute("code", "100").up()
+                                .element("status").attribute("code", "170").up()
+                                .element("status").attribute("code", "201").up().up().toString());
+
+                            global.MUCs[roomName].members.forEach(member => {
+                                let ClientData = global.Clients.find(i => i.accountId == member.accountId);
+                                if (!ClientData) return;
+
+                                ws.send(XMLBuilder.create("presence")
+                                    .attribute("from", getMUCmember(roomName, ClientData.displayName, ClientData.accountId, ClientData.resource))
+                                    .attribute("to", jid)
+                                    .attribute("xmlns", "jabber:client")
+                                    .element("x")
+                                    .attribute("xmlns", "http://jabber.org/protocol/muc#user")
+                                    .element("item")
+                                    .attribute("nick", getMUCmember(roomName, ClientData.displayName, ClientData.accountId, ClientData.resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
+                                    .attribute("jid", ClientData.jid)
+                                    .attribute("role", "participant")
+                                    .attribute("affiliation", "none").up().up().toString());
+
+                                if (accountId == ClientData.accountId) return;
+
+                                ClientData.client.send(XMLBuilder.create("presence")
+                                    .attribute("from", getMUCmember(roomName, displayName, accountId, resource))
+                                    .attribute("to", ClientData.jid)
+                                    .attribute("xmlns", "jabber:client")
+                                    .element("x")
+                                    .attribute("xmlns", "http://jabber.org/protocol/muc#user")
+                                    .element("item")
+                                    .attribute("nick", getMUCmember(roomName, displayName, accountId, resource).replace(`${roomName}@muc.${global.xmppDomain}/`, ""))
+                                    .attribute("jid", jid)
+                                    .attribute("role", "participant")
+                                    .attribute("affiliation", "none").up().up().toString());
                             });
-                        return;
-                    }
+                            return;
+                        }
                 }
 
                 let findStatus = msg.root.children.find(i => i.name == "status");
@@ -359,7 +359,7 @@ wss.on('connection', async (ws) => {
 
                 await updatePresenceForFriends(ws, status, away, false);
                 functions.getPresenceFromUser(accountId, accountId, false);
-            break;
+                break;
         }
 
         if (!clientExists && !connectionClosed) {
@@ -373,16 +373,20 @@ wss.on('connection', async (ws) => {
                     resource: resource,
                     lastPresenceUpdate: {
                         away: false,
-                        status: "{}" 
-                    } 
+                        status: "{}"
+                    }
                 });
 
                 clientExists = true;
             }
         }
     });
-    
-    ws.on('close', () => { connectionClosed = true; clientExists = false; RemoveClient(ws, joinedMUCs); });
+
+    ws.on('close', () => {
+        connectionClosed = true;
+        clientExists = false;
+        RemoveClient(ws, joinedMUCs);
+    });
 });
 
 function Error(ws) {
@@ -393,7 +397,7 @@ function Error(ws) {
 function RemoveClient(ws, joinedMUCs) {
     let clientIndex = global.Clients.findIndex(i => i.client == ws);
     let client = global.Clients[clientIndex];
-    
+
     if (clientIndex == -1) return;
 
     let ClientStatus = JSON.parse(client.lastPresenceUpdate.status);
@@ -414,14 +418,16 @@ function RemoveClient(ws, joinedMUCs) {
 
     try {
         switch (true) {
-            case (!ClientStatus.Properties): break;
-            case (isObject(ClientStatus.Properties)): {
-                for (let key in ClientStatus.Properties) {
-                    if (key.toLowerCase().startsWith("party.joininfo")) {
-                        if (isObject(ClientStatus.Properties[key])) partyId = ClientStatus.Properties[key].partyId;
+            case (!ClientStatus.Properties):
+                break;
+            case (isObject(ClientStatus.Properties)):
+                {
+                    for (let key in ClientStatus.Properties) {
+                        if (key.toLowerCase().startsWith("party.joininfo")) {
+                            if (isObject(ClientStatus.Properties[key])) partyId = ClientStatus.Properties[key].partyId;
+                        }
                     }
                 }
-            }
         }
     } catch {}
 
@@ -430,19 +436,19 @@ function RemoveClient(ws, joinedMUCs) {
             if (client.accountId == ClientData.accountId) return;
 
             ClientData.client.send(XMLBuilder.create("message")
-            .attribute("id", functions.MakeID().replace(/-/ig, "").toUpperCase())
-            .attribute("from", client.jid)
-            .attribute("xmlns", "jabber:client")
-            .attribute("to", ClientData.jid)
-            .element("body", JSON.stringify({
-                "type": "com.epicgames.party.memberexited",
-                "payload": {
-                    "partyId": partyId,
-                    "memberId": client.accountId,
-                    "wasKicked": false
-                },
-                "timestamp": new Date().toISOString()
-            })).up().toString());
+                .attribute("id", functions.MakeID().replace(/-/ig, "").toUpperCase())
+                .attribute("from", client.jid)
+                .attribute("xmlns", "jabber:client")
+                .attribute("to", ClientData.jid)
+                .element("body", JSON.stringify({
+                    "type": "com.epicgames.party.memberexited",
+                    "payload": {
+                        "partyId": partyId,
+                        "memberId": client.accountId,
+                        "wasKicked": false
+                    },
+                    "timestamp": new Date().toISOString()
+                })).up().toString());
         });
     }
 
@@ -460,10 +466,10 @@ async function getPresenceFromFriends(ws, accountId, jid) {
         if (!ClientData) return;
 
         let xml = XMLBuilder.create("presence")
-        .attribute("to", jid)
-        .attribute("xmlns", "jabber:client")
-        .attribute("from", ClientData.jid)
-        .attribute("type", "available")
+            .attribute("to", jid)
+            .attribute("xmlns", "jabber:client")
+            .attribute("from", ClientData.jid)
+            .attribute("type", "available")
 
         if (ClientData.lastPresenceUpdate.away) xml = xml.element("show", "away").up().element("status", ClientData.lastPresenceUpdate.status).up();
         else xml = xml.element("status", ClientData.lastPresenceUpdate.status).up();
@@ -487,12 +493,12 @@ async function updatePresenceForFriends(ws, body, away, offline) {
     accepted.forEach(friend => {
         let ClientData = global.Clients.find(i => i.accountId == friend.accountId);
         if (!ClientData) return;
-            
+
         let xml = XMLBuilder.create("presence")
-        .attribute("to", ClientData.jid)
-        .attribute("xmlns", "jabber:client")
-        .attribute("from", SenderData.jid)
-        .attribute("type", offline ? "unavailable" : "available");
+            .attribute("to", ClientData.jid)
+            .attribute("xmlns", "jabber:client")
+            .attribute("from", SenderData.jid)
+            .attribute("type", offline ? "unavailable" : "available");
 
         if (away) xml = xml.element("show", "away").up().element("status", body).up();
         else xml = xml.element("status", body).up();
@@ -508,11 +514,11 @@ function sendXmppMessageToClient(senderJid, msg, body) {
     if (!receiver) return;
 
     receiver.client.send(XMLBuilder.create("message")
-    .attribute("from", senderJid)
-    .attribute("id", msg.root.attributes.id)
-    .attribute("to", receiver.jid)
-    .attribute("xmlns", "jabber:client")
-    .element("body", `${body}`).up().toString());
+        .attribute("from", senderJid)
+        .attribute("id", msg.root.attributes.id)
+        .attribute("to", receiver.jid)
+        .attribute("xmlns", "jabber:client")
+        .element("body", `${body}`).up().toString());
 }
 
 function getMUCmember(roomName, displayName, accountId, resource) {
